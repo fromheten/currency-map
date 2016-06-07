@@ -49,4 +49,11 @@
     (- (last past)
        (average past))))
 
+(defn delta-for-country [[country-code currency] fx-history]
+  [country-code currency (current-to-avg-delta currency fx-history)])
+
+;; Map each country to the delta value their currency has
+(map #(delta-for-country % fx/fx-history)
+     fx/currency-to-country-mapping)
+
 (current-to-avg-delta "SEK" fx/fx-history)
