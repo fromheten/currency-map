@@ -5,7 +5,7 @@ Currencies fluctuate. You can know what country is more affordable, and go trave
 
 - [x] Add class with country name to SVG file
 - [x] Get map of countryname->currency
-- [ ] Download 10 years of currency fx data
+- [x] Download 10 years of currency fx data
 - [ ] Figure out the average of all prices for each currency
 - [x] Figure out how to paint one country
 - [ ] paint every country with a `(fn [medium-value current-value] (delta medium-value current-value))`
