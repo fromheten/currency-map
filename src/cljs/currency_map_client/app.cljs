@@ -6,18 +6,11 @@
             [clojure.string]
             [currency-map-client.fx :as fx])
   (:require-macros [cljs.core.async.macros :as async-macros :refer [go]]))
-(enable-console-print!)
+;;(enable-console-print!)
 
 (extend-type js/NodeList
   ISeqable
   (-seq [array] (array-seq array 0)))
-
-(def currency-country-map
-  (let [a (atom [])]
-    (go (xhr/send "currency-country-mapping.edn"
-                  (fn [evt] (let [res (-> evt .-target .getResponseText reader/read-string)]
-                              (reset! currency-country-map res)))))
-    a))
 
 (defn init []
   (let [c (.. js/document (createElement "DIV"))]
@@ -33,3 +26,24 @@
 
 (defn color-a-country! [country-code color]
   (set! (-> (get-dom-node-for-country-code (clojure.string/lower-case country-code)) .-style .-fill) color))
+
+(defn prp [x] (do (println x)
+                  x))
+
+(defn currency-price-at-year [currency-symbol fx-year]
+  (filter #(not (nil? %))
+          (map (fn [pair] (when (re-find
+                                 (re-pattern currency-symbol)
+                                 (first pair))
+                            (second pair)))
+               (get-in fx-year ["quotes"]))))
+
+(defn currency-price-points-thru-history [currency-symbol fx-dataset]
+  (mapcat #(currency-price-at-year currency-symbol %)
+          fx-dataset))
+
+(defn average [seq-of-numbers]
+  (/ (reduce + seq-of-numbers) (count seq-of-numbers)))
+
+(last (currency-price-points-thru-history "SEK" fx/fx-history))
+(average (currency-price-points-thru-history "SEK" fx/fx-history))
