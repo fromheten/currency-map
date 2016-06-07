@@ -7,7 +7,6 @@
             [currency-map-client.fx :as fx])
   (:require-macros [cljs.core.async.macros :as async-macros :refer [go]]))
 ;;(enable-console-print!)
-
 (extend-type js/NodeList
   ISeqable
   (-seq [array] (array-seq array 0)))
@@ -45,5 +44,9 @@
 (defn average [seq-of-numbers]
   (/ (reduce + seq-of-numbers) (count seq-of-numbers)))
 
-(last (currency-price-points-thru-history "SEK" fx/fx-history))
-(average (currency-price-points-thru-history "SEK" fx/fx-history))
+(defn current-to-avg-delta [currency-symbol history]
+  (let [past (currency-price-points-thru-history currency-symbol history)]
+    (- (last past)
+       (average past))))
+
+(current-to-avg-delta "SEK" fx/fx-history)
